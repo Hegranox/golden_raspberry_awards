@@ -16,7 +16,7 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@test/*": ["test/*"],
+      "@pipes/*": ["src/pipes/*"],
       "@db/*": ["db/*"]
     },
     "incremental": true,
