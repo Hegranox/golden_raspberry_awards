@@ -25,6 +25,11 @@ export class AppController {
     return this.appService.itWorks();
   }
 
+  @Get('/list-producer-winners')
+  listProducerWinners() {
+    return this.appService.listProducerWinners();
+  }
+
   @Post('populate')
   @UseInterceptors(FileInterceptor('file'))
   async populate(@UploadedFile(new CsvValidationPipe(populateColumns)) data: any[]) {

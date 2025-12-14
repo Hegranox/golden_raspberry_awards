@@ -3,6 +3,7 @@ import { DatabaseService } from '@db/database.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Collection } from 'mongodb';
 import { uuidv7 } from 'uuidv7';
+import { ProcessMovie } from '@/types/movies';
 
 @Injectable()
 export class AppRepository implements OnModuleInit {
@@ -14,9 +15,9 @@ export class AppRepository implements OnModuleInit {
     this.collection = this.databaseService.getCollection<Movie>('movies');
   }
 
-  async upsertMany(documents: Partial<Movie>[]): Promise<void> {
+  async upsertMany(documents: ProcessMovie[]): Promise<void> {
     const now = new Date();
-    const uniqueMap = new Map<string, Partial<Movie>>();
+    const uniqueMap = new Map<string, Partial<ProcessMovie>>();
 
     documents.forEach((doc) => {
       const normalizedTitle = doc.title?.toLowerCase().trim();
@@ -43,5 +44,9 @@ export class AppRepository implements OnModuleInit {
     if (operations.length > 0) {
       await this.collection.bulkWrite(operations);
     }
+  }
+
+  async findAll(): Promise<Movie[]> {
+    return this.collection.find({}).toArray();
   }
 }

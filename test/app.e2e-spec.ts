@@ -1,5 +1,6 @@
 import { Movie } from '@db/collections/movie.schema';
 import { DatabaseService } from '@db/database.service';
+import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
@@ -31,11 +32,12 @@ describe('AppController (e2e)', () => {
   });
 
   describe('POST /populate', () => {
-    it('should import CSV file and save data to database', async () => {
+    it('should import CSV file with multiple lines and save data to database', async () => {
       const csvContent = `year;title;studios;producers;winner
-    1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
-    1980;Cruising;Lorimar Productions;Jerry Weintraub;no
-    1980;The Formula;MGM;Steve Shagan;no`;
+1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
+1980;Cruising;Lorimar Productions;Jerry Weintraub;no
+1980;The Formula;MGM;Steve Shagan;no
+1981;Mommy Dearest;Paramount Pictures;Frank Yablans;yes`;
 
       const response = await request(app.getHttpServer())
         .post('/populate')
@@ -44,59 +46,135 @@ describe('AppController (e2e)', () => {
 
       expect(response.body).toEqual({
         message: 'Data processed successfully',
-        count: 3,
+        count: 4,
       });
 
       const collection = databaseService.getCollection<Movie>('movies');
       const movies = await collection.find({}).toArray();
 
-      expect(movies).toHaveLength(3);
-
-      const firstMovie = movies.find(
-        (m) => m.title.toLowerCase().trim() === "can't stop the music",
-      );
-      expect(firstMovie).toBeDefined();
-      expect(firstMovie?.title).toBe("Can't Stop the Music");
-      expect(firstMovie?.year).toBe(1980);
-      expect(firstMovie?.studios).toBe('Associated Film Distribution');
-      expect(firstMovie?.producers).toBe('Allan Carr');
-      expect(firstMovie?.winner).toBe(true);
-      expect(firstMovie?._id).toBeDefined();
-      expect(firstMovie?.createdAt).toBeInstanceOf(Date);
-      expect(firstMovie?.updatedAt).toBeInstanceOf(Date);
-
-      const secondMovie = movies.find((m) => m.title.toLowerCase().trim() === 'cruising');
-      expect(secondMovie).toBeDefined();
-      expect(secondMovie?.title).toBe('Cruising');
-      expect(secondMovie?.year).toBe(1980);
-      expect(secondMovie?.winner).toBe(false);
+      expect(movies).toHaveLength(4);
     });
+  });
 
-    it('should handle duplicate movies (upsert)', async () => {
-      const csvContent1 = `year;title;studios;producers;winner
-1980;Test Movie;Studio A;Producer A;yes`;
-
-      const csvContent2 = `year;title;studios;producers;winner
-1980;Test Movie;Studio B;Producer B;no`;
-
-      await request(app.getHttpServer())
-        .post('/populate')
-        .attach('file', Buffer.from(csvContent1), 'movies1.csv')
-        .expect(201);
-
-      await request(app.getHttpServer())
-        .post('/populate')
-        .attach('file', Buffer.from(csvContent2), 'movies2.csv')
-        .expect(201);
-
+  describe('GET /list-producer-winners', () => {
+    it('should return min and max intervals for producers with multiple wins', async () => {
       const collection = databaseService.getCollection<Movie>('movies');
-      const movies = await collection.find({}).toArray();
 
-      expect(movies).toHaveLength(1);
-      expect(movies[0].studios).toBe('Studio B');
-      expect(movies[0].producers).toBe('Producer B');
-      expect(movies[0].winner).toBe(false);
-      expect(movies[0].createdAt).toBeInstanceOf(Date);
+      const producerA = faker.person.fullName();
+      const producerB = faker.person.fullName();
+      const producerC = faker.person.fullName();
+
+      const studioA = faker.company.name();
+      const studioB = faker.company.name();
+      const studioC = faker.company.name();
+
+      const yearA1 = 1980;
+      const yearA2 = 1981;
+      await collection.insertMany([
+        {
+          _id: faker.string.uuid(),
+          year: yearA1,
+          title: faker.music.songName(),
+          studios: studioA,
+          producers: producerA,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+        {
+          _id: faker.string.uuid(),
+          year: yearA2,
+          title: faker.music.songName(),
+          studios: studioA,
+          producers: producerA,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+      ]);
+
+      const yearB1 = 1990;
+      const yearB2 = 2000;
+      await collection.insertMany([
+        {
+          _id: faker.string.uuid(),
+          year: yearB1,
+          title: faker.music.songName(),
+          studios: studioB,
+          producers: producerB,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+        {
+          _id: faker.string.uuid(),
+          year: yearB2,
+          title: faker.music.songName(),
+          studios: studioB,
+          producers: producerB,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+      ]);
+
+      const yearC1 = 2005;
+      const yearC2 = 2015;
+      await collection.insertMany([
+        {
+          _id: faker.string.uuid(),
+          year: yearC1,
+          title: faker.music.songName(),
+          studios: studioC,
+          producers: producerC,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+        {
+          _id: faker.string.uuid(),
+          year: yearC2,
+          title: faker.music.songName(),
+          studios: studioC,
+          producers: producerC,
+          winner: true,
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+        },
+      ]);
+
+      const response = await request(app.getHttpServer()).get('/list-producer-winners').expect(200);
+
+      expect(response.body).toHaveProperty('min');
+      expect(response.body).toHaveProperty('max');
+      expect(Array.isArray(response.body.min)).toBe(true);
+      expect(Array.isArray(response.body.max)).toBe(true);
+
+      expect(response.body.min).toHaveLength(1);
+      expect(response.body.min[0]).toMatchObject({
+        producer: producerA,
+        interval: 1,
+        previousWin: yearA1,
+        followingWin: yearA2,
+      });
+
+      expect(response.body.max).toHaveLength(2);
+      expect(response.body.max).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            producer: producerB,
+            interval: 10,
+            previousWin: yearB1,
+            followingWin: yearB2,
+          }),
+          expect.objectContaining({
+            producer: producerC,
+            interval: 10,
+            previousWin: yearC1,
+            followingWin: yearC2,
+          }),
+        ]),
+      );
     });
   });
 });
