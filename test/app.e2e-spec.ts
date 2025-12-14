@@ -31,46 +31,46 @@ describe('AppController (e2e)', () => {
   });
 
   describe('POST /populate', () => {
-    //     it('should import CSV file and save data to database', async () => {
-    //       const csvContent = `year;title;studios;producers;winner
-    // 1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
-    // 1980;Cruising;Lorimar Productions;Jerry Weintraub;no
-    // 1980;The Formula;MGM;Steve Shagan;no`;
+    it('should import CSV file and save data to database', async () => {
+      const csvContent = `year;title;studios;producers;winner
+    1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
+    1980;Cruising;Lorimar Productions;Jerry Weintraub;no
+    1980;The Formula;MGM;Steve Shagan;no`;
 
-    //       const response = await request(app.getHttpServer())
-    //         .post('/populate')
-    //         .attach('file', Buffer.from(csvContent), 'movies.csv')
-    //         .expect(201);
+      const response = await request(app.getHttpServer())
+        .post('/populate')
+        .attach('file', Buffer.from(csvContent), 'movies.csv')
+        .expect(201);
 
-    //       expect(response.body).toEqual({
-    //         message: 'Data processed successfully',
-    //         count: 3,
-    //       });
+      expect(response.body).toEqual({
+        message: 'Data processed successfully',
+        count: 3,
+      });
 
-    //       const collection = databaseService.getCollection<Movie>('movies');
-    //       const movies = await collection.find({}).toArray();
+      const collection = databaseService.getCollection<Movie>('movies');
+      const movies = await collection.find({}).toArray();
 
-    //       expect(movies).toHaveLength(3);
+      expect(movies).toHaveLength(3);
 
-    //       const firstMovie = movies.find(
-    //         (m) => m.title.toLowerCase().trim() === "can't stop the music",
-    //       );
-    //       expect(firstMovie).toBeDefined();
-    //       expect(firstMovie?.title).toBe("Can't Stop the Music");
-    //       expect(firstMovie?.year).toBe(1980);
-    //       expect(firstMovie?.studios).toBe('Associated Film Distribution');
-    //       expect(firstMovie?.producers).toBe('Allan Carr');
-    //       expect(firstMovie?.winner).toBe(true);
-    //       expect(firstMovie?._id).toBeDefined();
-    //       expect(firstMovie?.createdAt).toBeInstanceOf(Date);
-    //       expect(firstMovie?.updatedAt).toBeInstanceOf(Date);
+      const firstMovie = movies.find(
+        (m) => m.title.toLowerCase().trim() === "can't stop the music",
+      );
+      expect(firstMovie).toBeDefined();
+      expect(firstMovie?.title).toBe("Can't Stop the Music");
+      expect(firstMovie?.year).toBe(1980);
+      expect(firstMovie?.studios).toBe('Associated Film Distribution');
+      expect(firstMovie?.producers).toBe('Allan Carr');
+      expect(firstMovie?.winner).toBe(true);
+      expect(firstMovie?._id).toBeDefined();
+      expect(firstMovie?.createdAt).toBeInstanceOf(Date);
+      expect(firstMovie?.updatedAt).toBeInstanceOf(Date);
 
-    //       const secondMovie = movies.find((m) => m.title.toLowerCase().trim() === 'cruising');
-    //       expect(secondMovie).toBeDefined();
-    //       expect(secondMovie?.title).toBe('Cruising');
-    //       expect(secondMovie?.year).toBe(1980);
-    //       expect(secondMovie?.winner).toBe(false);
-    //     });
+      const secondMovie = movies.find((m) => m.title.toLowerCase().trim() === 'cruising');
+      expect(secondMovie).toBeDefined();
+      expect(secondMovie?.title).toBe('Cruising');
+      expect(secondMovie?.year).toBe(1980);
+      expect(secondMovie?.winner).toBe(false);
+    });
 
     it('should handle duplicate movies (upsert)', async () => {
       const csvContent1 = `year;title;studios;producers;winner
