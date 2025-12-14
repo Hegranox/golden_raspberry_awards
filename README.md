@@ -1,98 +1,201 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Golden Raspberry Awards API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API for managing Golden Raspberry Awards (Razzie Awards) data.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## How to run the application
 
-## Description
+### Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js (version 18 or higher)
+- pnpm (package manager)
 
-## Project setup
+### Installation
 
 ```bash
-$ pnpm install
+# Install dependencies
+pnpm install
 ```
 
-## Compile and run the project
+### Run in development mode
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+# Start application in watch mode
+pnpm start:dev
 ```
 
-## Run tests
+The application will be available at `http://localhost:3000`
+
+### Run in production mode
 
 ```bash
-# unit tests
-$ pnpm run test
+# Build the application
+pnpm build
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Run the application
+pnpm start:prod
 ```
 
-## Deployment
+## API Documentation (Swagger)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Interactive API documentation is available through Swagger UI:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**URL:** `http://localhost:3000/api`
+
+In Swagger UI you can:
+
+- View all available endpoints
+- See request and response examples
+- Test endpoints directly through the interface
+- View DTO schemas
+
+## Tests
+
+### Unit Tests
+
+Run unit tests with:
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Run all unit tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:cov
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Unit tests are located in `src/**/*.spec.ts` and test:
 
-## Resources
+- `AppService` - Business logic
+- `AppRepository` - Database operations
+- `CsvValidationPipe` - CSV validation and transformation
 
-Check out a few resources that may come in handy when working with NestJS:
+### End-to-End (E2E) Tests
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Run E2E tests with:
 
-## Support
+```bash
+pnpm test:e2e
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+E2E tests are located in `test/**/*.e2e-spec.ts` and test:
 
-## Stay in touch
+- CSV file upload via `/populate`
+- Producer interval calculation via `/list-producer-winners`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Application testing flow
 
-## License
+### 1. Run the application
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+pnpm start:dev
+```
+
+### 2. Populate database with CSV file
+
+Make a POST request to `/populate` with a CSV file:
+
+**Example using curl:**
+
+```bash
+curl -X POST http://localhost:3000/populate \
+  -F "file=@movies.csv"
+```
+
+**Example CSV file (`movies.csv`):**
+
+```csv
+year;title;studios;producers;winner
+1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
+1980;Cruising;Lorimar Productions;Jerry Weintraub;no
+1980;The Formula;MGM;Steve Shagan;no
+1981;Mommy Dearest;Paramount Pictures;Frank Yablans;yes
+```
+
+**CSV Format:**
+
+- Delimiter: `;` (semicolon)
+- Required columns: `year`, `title`, `studios`, `producers`, `winner`
+- `winner`: `yes` for winner, `no` or empty for non-winner
+- `year`: number (e.g., 1980)
+- `title`, `studios`, `producers`: strings
+
+**Expected response:**
+
+```json
+{
+  "message": "Data processed successfully",
+  "count": 4
+}
+```
+
+### 3. Query producer intervals
+
+After populating the database, make a GET request to `/list-producer-winners`:
+
+**Example using curl:**
+
+```bash
+curl http://localhost:3000/list-producer-winners
+```
+
+**Expected response:**
+
+```json
+{
+  "min": [
+    {
+      "producer": "Allan Carr",
+      "interval": 1,
+      "previousWin": 1980,
+      "followingWin": 1981
+    }
+  ],
+  "max": [
+    {
+      "producer": "Producer Name",
+      "interval": 10,
+      "previousWin": 1990,
+      "followingWin": 2000
+    }
+  ]
+}
+```
+
+**Where:**
+
+- `min`: Array with producers who have the minimum interval between consecutive wins
+- `max`: Array with producers who have the maximum interval between consecutive wins
+- Each item contains: `producer`, `interval` (in years), `previousWin` and `followingWin`
+
+### 4. Test via Swagger UI
+
+1. Access `http://localhost:3000/api`
+2. Use the `POST /populate` endpoint to upload the CSV file
+3. Use the `GET /list-producer-winners` endpoint to query the results
+
+## Project Structure
+
+```
+.
+├── db/                    # Database module
+│   ├── collections/       # Collection schemas
+│   ├── factories/         # Test factories
+│   └── database.service.ts # MongoDB connection service
+├── src/
+│   ├── dto/               # Swagger DTOs
+│   ├── pipes/             # Validation pipes
+│   ├── app.controller.ts   # Main controller
+│   ├── app.service.ts      # Main service
+│   └── app.repository.ts   # Database operations repository
+└── test/                   # E2E tests
+```
+
+## Technologies
+
+- **NestJS** - Node.js framework
+- **MongoDB Memory Server** - In-memory database for tests
+- **Swagger** - API documentation
+- **Jest** - Testing framework
+- **Biome** - Linter and formatter
