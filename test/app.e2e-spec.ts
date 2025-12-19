@@ -11,6 +11,11 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let databaseService: DatabaseService;
 
+  const clearDatabase = async () => {
+    const collection = databaseService.getCollection<Movie>('movies');
+    await collection.deleteMany({});
+  };
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -27,12 +32,27 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(200).expect('It works!');
+  describe('Seeder', () => {
+    it('should seed database with CSV data when application starts', async () => {
+      const collection = databaseService.getCollection<Movie>('movies');
+      const movies = await collection.find({}).toArray();
+
+      expect(movies).toHaveLength(206);
+    });
+  });
+
+  describe('GET /', () => {
+    it('should return "It works!"', async () => {
+      await clearDatabase();
+
+      return request(app.getHttpServer()).get('/').expect(200).expect('It works!');
+    });
   });
 
   describe('POST /populate', () => {
     it('should import CSV file with multiple lines and save data to database', async () => {
+      await clearDatabase();
+
       const csvContent = `year;title;studios;producers;winner
 1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
 1980;Cruising;Lorimar Productions;Jerry Weintraub;no
@@ -58,7 +78,7 @@ describe('AppController (e2e)', () => {
 
   describe('GET /list-producer-winners', () => {
     it('should return min and max intervals for producers with multiple wins', async () => {
-      const collection = databaseService.getCollection<Movie>('movies');
+      await clearDatabase();
 
       const producerA = faker.person.fullName();
       const producerB = faker.person.fullName();
@@ -70,6 +90,8 @@ describe('AppController (e2e)', () => {
 
       const yearA1 = 1980;
       const yearA2 = 1981;
+
+      const collection = databaseService.getCollection<Movie>('movies');
       await collection.insertMany([
         {
           _id: faker.string.uuid(),
