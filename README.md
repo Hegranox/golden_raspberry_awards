@@ -25,6 +25,8 @@ pnpm start:dev
 
 The application will be available at `http://localhost:3000`
 
+**Note:** On application startup, the API automatically imports initial data from `src/assets/seeder.csv` into the database. This ensures the database is populated with initial movie data when the application starts.
+
 ### Run in production mode
 
 ```bash
@@ -92,7 +94,9 @@ E2E tests are located in `test/**/*.e2e-spec.ts` and test:
 pnpm start:dev
 ```
 
-### 2. Populate database with CSV file
+**Note:** The database is automatically populated with initial data from `seeder.csv` when the application starts. You can skip step 2 if you want to use the initial data, or proceed to add additional data.
+
+### 2. Populate database with CSV file (Optional)
 
 Make a POST request to `/populate` with a CSV file:
 
@@ -184,8 +188,10 @@ curl http://localhost:3000/list-producer-winners
 │   ├── factories/         # Test factories
 │   └── database.service.ts # MongoDB connection service
 ├── src/
+│   ├── assets/            # Initial data files (seeder.csv)
 │   ├── dto/               # Swagger DTOs
 │   ├── pipes/             # Validation pipes
+│   ├── seeds/             # Database seeding service
 │   ├── app.controller.ts   # Main controller
 │   ├── app.service.ts      # Main service
 │   └── app.repository.ts   # Database operations repository
